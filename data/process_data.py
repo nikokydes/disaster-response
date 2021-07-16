@@ -18,7 +18,6 @@ def clean_data(df):
 
     # Create a dataframe of the 36 individual category columns
     categories = df.categories.str.split(';', expand=True)
-    categories.head()
 
     # Aelect the first row of the categories dataframe and use 
     # this row to extract a list of new column names for categories
@@ -36,7 +35,6 @@ def clean_data(df):
     # Replace `categories` column in `df` with new category columns.
     df.drop(columns='categories', inplace=True)
     df = pd.concat([df, categories], axis=1)
-    df.head()
 
     # Remove duplicates.
     df = df.drop_duplicates()
