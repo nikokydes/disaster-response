@@ -1,3 +1,20 @@
+
+"""
+Python script to create, train, and output an NLP model to predict the categories 
+of diaster text messages.
+
+Project: Udacity Disaster Response Pipeline Project (Project 2)
+
+Inputs:
+    1. File name and path to the SQLite database containing a 'Messages' table containing 
+        disaster text messages and category data
+    2. File name and path to pickle file (*.pkl) containing the trained ML model 
+    
+Example call:
+    python train_classifier.py ../data/DisasterResponse.db classifier.pkl
+"""
+
+# Import statements
 import sys
 import nltk
 from nltk.corpus import stopwords
@@ -22,6 +39,18 @@ from sklearn.multioutput import MultiOutputClassifier
 
 
 def load_data(database_filepath):
+    """
+    Function to load the cleaned message data from the database
+    created by the process_data.py script
+    
+    Input:
+        database_filepath: File path to database file containing the cleaned message data
+    Output:
+        X: 1-d array containing the 'message' column
+        Y: 2-d array containing the target category column data
+        categories: List of target category labels
+    """    
+
     # load data from database
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table("Messages", engine)
@@ -41,6 +70,15 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
+    """
+    Function to tokenize, lemmatize, remove stop words, and clean the disaster text messages
+    for use with the CountVectorizer function.
+    
+    Input:
+        text: A string containing a single text message
+    Output:
+        clean_tokens: A list of cleaned, lemmatized tokens representing the input text
+    """    
     
     # Remove punctuation, covert to lowercase and strip whitespace
     text = re.sub(r"[^a-zA-Z0-9]", " ", text)
@@ -65,6 +103,15 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Function to create the ML pipeline and grid search object that will be used to
+    create the predictive NLP model.
+    
+    Input:
+        None
+    Output:
+        cv: A grid search object contructed with the NLP pipeline
+    """  
     
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -85,6 +132,18 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    Function for generating and outputting scoring metrics for the trained NLP model
+    
+    Input:
+        model: A trained NLP model
+        X_test: Test set of message data as 1-d array
+        Y_test: Test set of target data as 2-d array
+        category_names: List of target category labels
+    Output:
+        cv: A grid search object contructed with the NLP pipeline
+    """ 
+    
     Y_pred = model.predict(X_test)
     for i in range(0, Y_test.shape[1]):
         precision, recall, fscore, support = precision_recall_fscore_support(Y_test[:,i], Y_pred[:,i])
@@ -96,11 +155,28 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    """
+    Function to create a pickle file for a given trained model
+    
+    Input:
+        model: A trained NLP model
+        model_filepath: Output file name and path for pickled model
+    Output:
+        None
+    """ 
     with open(model_filepath, 'wb') as f:
         pickle.dump(model, f)
 
 
 def main():
+    """
+    Main function which executes the steps to create and output the trained model.
+    
+    Input:
+        None
+    Output:
+        None
+    """ 
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
