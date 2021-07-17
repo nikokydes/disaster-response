@@ -8,7 +8,7 @@ This project will includes a web app where an emergency worker can input a new m
 ## Installation
 This application was created using a standard Anaconda Python installation with a core python version of 3.6.3.  Libraries used include:
 - _Scikit-Learn_ for machine learning
-- _Flask_ and _Ployly_ for creating the web application and visuals
+- _Flask_ and _Plotly_ for creating the web application and visuals
 - _NLTK_ for natural language processing
 - _Pickle_ for serializing the trained machine learning model
 - _SQLAlchemy_ for database interactions
